@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://clmm54qkt3hbw"]
+
+[ext_resource type="Texture2D" uid="uid://duvirw6bnj3f5" path="res://icon.svg" id="1_63kc6"]
+
+[node name="Main" type="Node"]
+
+[node name="Node" type="Node" parent="."]
+
+[node name="DemoSprite" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="DemoSprite"]
+texture = ExtResource("1_63kc6")
+
+[node name="HUD" type="CanvasLayer" parent="."]
