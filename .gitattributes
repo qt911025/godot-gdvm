@@ -4,3 +4,4 @@
 /**        export-ignore
 /addons    !export-ignore
 /addons/gdvm !export-ignore
+/addons/gdvm/** !export-ignore
