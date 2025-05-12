@@ -16,7 +16,7 @@ func _init(target: Object, property: NodePath, data_node: DataNode) -> void:
 
 	_target_ref = weakref(target)
 	_property = property
-	_data_node_ref = weakref(data_node)
+	# _data_node_ref = weakref(data_node)
 	data_node.changed.connect(_on_data_node_changed)
 	_on_data_node_changed(data_node)
 

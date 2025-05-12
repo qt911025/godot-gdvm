@@ -5,7 +5,7 @@ const DataNode = preload("../data_node/base.gd")
 # 直接观察data_node
 
 var _target_ref: WeakRef
-var _data_node_ref: WeakRef
+# var _data_node_ref: WeakRef
 
 func _init():
 	assert(false, "Writer is an abstract class, please implement it.")

@@ -279,6 +279,45 @@ static func type_can_be_element_of_array_of_type(type: Variant, array_type: Vari
 static func type_is_object(type: Variant) -> bool:
 	return type == TYPE_OBJECT or type is String or type is StringName or type is Script
 
+## 提取类型对应的内置类
+## 如果是variant的话会返回TYPE_NIL
+static func type_to_builtin(type: Variant) -> int:
+	var result: int
+	match typeof(type):
+		TYPE_NIL:
+			result = TYPE_NIL
+		TYPE_INT:
+			result = type
+		_:
+			result = TYPE_OBJECT
+	return result
+
+## 提取类型对应的Godot原生类名
+static func type_to_class_name(type: Variant) -> StringName:
+	match typeof(type):
+		TYPE_STRING_NAME:
+			return type as StringName
+		TYPE_STRING:
+			return StringName(type)
+		TYPE_OBJECT:
+			return (type as Script).get_instance_base_type()
+	return &""
+
+## 提取类型对应的脚本
+static func type_to_script(type: Variant) -> Script:
+	if typeof(type) == TYPE_OBJECT:
+		return type
+	else:
+		return null
+
+## 打包提取类型对应的三个值
+static func type_to_3(type: Variant) -> Dictionary:
+	return {
+		"builtin": type_to_builtin(type),
+		"class_name": type_to_class_name(type),
+		"script": type_to_script(type)
+	}
+
 ## 判断NodePath是否为空
 ## 这是特殊规则，会把"/"视为空
 static func node_path_is_empty(node_path: NodePath) -> bool:
@@ -308,7 +347,7 @@ static func pack_scene(node: Node) -> PackedScene:
 
 ## 断言实例是否是这个类型
 ## 效果同instance_is_type，但会抛出具体的断言错误
-static func assert_instance_match_array_type(instance: Variant, type: Variant) -> bool:
+static func assert_instance_is_type(instance: Variant, type: Variant) -> bool:
 	match typeof(type):
 		TYPE_INT: # primitive type
 			assert(is_instance_of(instance, type), "Type assertion error: Element type mismatch. expect %s, got %s" % [type_string(type), type_string(typeof(instance))])

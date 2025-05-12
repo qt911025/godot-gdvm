@@ -37,14 +37,3 @@ func _init(object: Object, options: Dictionary) -> void:
 	_data = extra_pin.pure_pin.to_data_node()
 	var compiler := Compiler.new(_base, extra_pin, _data)
 	_writers = compiler.writers
-
-	# node.set_meta("__gdvm__", self)
-
-# todo 
-# 1. 自动绑observer，observer挂载在data node上
-# 1.1 新的observer(node:观察子节点创建；array；dictionary；)
-# 2. computed (data node) 是一个复合struct，包括若干入口值（读写），若干出口值（只读）
-# 3. callable (writer) 是一个多入口写者，缓存所有参数值，观察多个data node，只要有一个data node改变就触发callable
-# 4. 向外暴露属性，看看gut的double是怎么实现的
-# 5. 强制从某个节点开始不绑
-# *. vue还有啥？

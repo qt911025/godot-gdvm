@@ -40,7 +40,7 @@ func _init(target: Node, data_node: DataNodeList, child_sub_writer: ChildSubWrit
 	assert(is_instance_valid(child_sub_writer))
 
 	_target_ref = weakref(target)
-	_data_node_ref = weakref(data_node)
+	# _data_node_ref = weakref(data_node)
 	_sub_writer = child_sub_writer
 	data_node.changed.connect(_on_data_node_changed)
 	_on_data_node_changed(data_node)

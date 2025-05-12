@@ -1,4 +1,4 @@
-## WriterArray
+## WriterPropertyArray
 ## 专门用于修改Array
 extends Writer
 const Writer = preload("./base.gd")
@@ -21,7 +21,7 @@ class ElementSubWriter:
 	var alloc_element: Callable
 	var drop_element: Callable # must include unbind, if your writers has strong references
 
-	var element_map := {} # 键是object id，作为弱引用，值是ElementInfo，是对target_element的强引用
+	var element_map: Dictionary[int, ElementInfo] # 键是DataNode的object id，作为弱引用，值是ElementInfo，是对target_element的强引用
 
 	func _init(
 		alloc_element_cb: Callable = func(element_data_node: DataNode) -> ElementInfo: return null,
@@ -40,12 +40,12 @@ func _init(target: Object, array_property: NodePath, data_node: DataNodeList, el
 	assert(is_instance_valid(target))
 	assert(target.get_indexed(array_property) is Array)
 	var target_array: Array = target.get_indexed(array_property)
-	assert(not target_array.is_typed() or data_node.is_same_typed_with_array(target_array))
 	assert(is_instance_valid(data_node))
+	assert(not target_array.is_typed() or data_node.is_same_typed_with_array(target_array))
 
 	_target_ref = weakref(target)
 	_array_property = array_property
-	_data_node_ref = weakref(data_node)
+	# _data_node_ref = weakref(data_node)
 	_sub_writer = element_sub_writer
 
 	if _sub_writer == null:
@@ -72,10 +72,10 @@ func _on_element_changed(data_node: DataNode) -> void:
 func _on_order_changed(data_node: DataNode) -> void:
 	var target: Object = _target_ref.get_ref()
 	if is_instance_valid(target):
-		var target_array: Array = target.get_indexed(_array_property)
 		var element_nodes: Array[DataNode] = data_node.get_element_nodes()
 		var new_size := element_nodes.size()
-		target_array.resize(element_nodes.size())
+		var target_array: Array = target.get_indexed(_array_property)
+		target_array.resize(new_size)
 		
 		var old_element_map := _sub_writer.element_map
 		var new_element_map := {}
@@ -92,9 +92,9 @@ func _on_order_changed(data_node: DataNode) -> void:
 			target_array[i] = target_element_info.target_element
 			new_element_map[element_data_node_id] = target_element_info
 
-		for id_of_waste in old_element_map.keys():
+		for id_of_waste in old_element_map:
 			_sub_writer.drop_element.call(old_element_map[id_of_waste])
 		
 		_sub_writer.element_map = new_element_map
 	else:
-		data_node.changed.disconnect(_on_order_changed)
+		data_node.order_changed.disconnect(_on_order_changed)

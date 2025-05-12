@@ -46,8 +46,8 @@ static func _bind_data_node_tree(base: Object, extra_pin: ExtraPin, data_node: D
 			var data_node_struct := data_node as DataNodeStruct
 			var properties := extra_pin.structed_trait.properties
 			for key: StringName in properties:
-				assert(is_instance_valid(data_node_struct.get_property_data_node(key)))
-				_bind_data_node_tree(base, properties[key], data_node_struct.get_property_data_node(key), writer_bucket)
+				assert(is_instance_valid(data_node_struct.get_data_node(key)))
+				_bind_data_node_tree(base, properties[key], data_node_struct.get_data_node(key), writer_bucket)
 		PurePin.PurePinList: # 都算叶子
 			assert(data_node is DataNodeList)
 			if extra_pin.pathed_trait != null:
@@ -77,8 +77,8 @@ static func _bind_data_node_tree(base: Object, extra_pin: ExtraPin, data_node: D
 			var data_node_node := data_node as DataNodeNode
 			var properties := extra_pin.structed_trait.properties
 			for key: StringName in properties:
-				assert(is_instance_valid(data_node_node.get_property_data_node(key)))
-				_bind_data_node_tree(base, properties[key], data_node_node.get_property_data_node(key), writer_bucket)
+				assert(is_instance_valid(data_node_node.get_data_node(key)))
+				_bind_data_node_tree(base, properties[key], data_node_node.get_data_node(key), writer_bucket)
 			# children
 			var children_data_node := data_node_node.children()
 			var pathed_trait := extra_pin.pathed_trait

@@ -4,8 +4,6 @@ const DataNodeStruct = preload("./struct.gd")
 const DataNodeList = preload("./list.gd")
 const DataNodeNode = preload("./node.gd")
 
-const Utils = preload("../../utils.gd")
-
 # data =====================================================================================
 class NodeDataBucket:
 	var _data: Dictionary

@@ -41,7 +41,8 @@ const WriterProperty = preload("./core/writer/property.gd")
 const WriterPropertyArray = preload("./core/writer/property_array.gd")
 const WriterNode = preload("./core/writer/node.gd")
 
-const Observer = preload("./core/observer.gd")
+const Observer = preload("./core/observer/base.gd")
+const ObserverProperty = preload("./core/observer/property.gd")
 
 # binder
 const Pin = preload("./binder/pin/raw.gd")

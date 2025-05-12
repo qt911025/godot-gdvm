@@ -4,7 +4,7 @@ extends Control
 
 const DataNodeString = Gdvm.DataNodeString
 const WriterProperty = Gdvm.WriterProperty
-const Observer = Gdvm.Observer
+const Observer = Gdvm.ObserverProperty
 
 @onready var text_label: Label = $Panel/Label
 @onready var text_edit: TextEdit = $Panel/TextEdit
