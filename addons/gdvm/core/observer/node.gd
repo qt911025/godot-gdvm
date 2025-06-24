@@ -3,6 +3,7 @@ const Observer = preload("./base.gd")
 const DataNodeList = preload("../data_node/list.gd")
 const Utils = preload("../../utils.gd")
 
+var _changed_notified: bool
 var _alloc_child_observer: Callable
 var _child_map: Array[ChildInfo]
 
@@ -28,14 +29,19 @@ func _init(source: Node,
 ) -> void:
 	super._init(source, target_data_node_list)
 	_alloc_child_observer = alloc_child_observer_cb
-	source.child_entered_tree.connect(_on_changed_notified)
-	source.child_exiting_tree.connect(_on_changed_notified)
 	source.child_order_changed.connect(_on_changed_notified)
 	_on_changed_notified()
 
 func _on_changed_notified() -> void:
+	if not _changed_notified:
+		_changed_notified = true
+		_defer_update.call_deferred()
+
+func _defer_update() -> void:
 	var source: Node = _source_ref.get_ref()
-	assert(is_instance_valid(source)) # 按理说应该永远不会发生
+	if not is_instance_valid(source):
+ 		# 因为是异步调用，所以可能在_on_changed_notified时释放
+		return
 	var target_data_node_list: DataNodeList = _target_data_node_ref.get_ref()
 	if is_instance_valid(target_data_node_list):
 		var source_children := source.get_children()
@@ -53,6 +59,5 @@ func _on_changed_notified() -> void:
 				var binded_observers: Array = _alloc_child_observer.call(source_child, target_element)
 				_child_map[i] = ChildInfo.new(source_child_id, target_element_id, binded_observers)
 	else:
-		source.child_entered_tree.disconnect(_on_changed_notified)
-		source.child_exiting_tree.disconnect(_on_changed_notified)
 		source.child_order_changed.disconnect(_on_changed_notified)
+	_changed_notified = false

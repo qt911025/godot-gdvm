@@ -1,12 +1,12 @@
 class_name Gdvm
 
 const Utils = preload("./utils.gd")
-# const BindNode = preload("./bind_node/bind_node.gd")
 
 const DataNode = preload("./core/data_node/base.gd")
 const DataNodeVariant = preload("./core/data_node/variant.gd")
 const DataNodeStruct = preload("./core/data_node/struct.gd")
 const DataNodeList = preload("./core/data_node/list.gd")
+const DataNodeDict = preload("./core/data_node/dict.gd")
 const DataNodeNode = preload("./core/data_node/node.gd")
 
 const DataNodeStrict = preload("./core/data_node/strict/base.gd")
@@ -39,11 +39,22 @@ const FactoryOfDataNode = preload("./core/data_node/factory.gd")
 const Writer = preload("./core/writer/base.gd")
 const WriterProperty = preload("./core/writer/property.gd")
 const WriterPropertyArray = preload("./core/writer/property_array.gd")
+const WriterPropertyDictionary = preload("./core/writer/property_dictionary.gd")
 const WriterNode = preload("./core/writer/node.gd")
 
 const Observer = preload("./core/observer/base.gd")
 const ObserverProperty = preload("./core/observer/property.gd")
+const ObserverPropertyArray = preload("./core/observer/property_array.gd")
+const ObserverPropertyDictionary = preload("./core/observer/property_dictionary.gd")
+const ObserverNode = preload("./core/observer/node.gd")
 
 # binder
-const Pin = preload("./binder/pin/raw.gd")
-const Binder = preload("./binder/base.gd")
+const DataTreeOptions = preload("./binder/data_tree/options.gd")
+const DataTreeTemplate = preload("./binder/data_tree/template.gd")
+const DataTree = preload("./binder/data_tree/tree.gd")
+
+const ObserverPack = preload("./binder/observer_pack/base.gd")
+const ObserverPackTree = preload("./binder/observer_pack/tree/base.gd")
+
+const WriterPack = preload("./binder/writer_pack/base.gd")
+const WriterPackTree = preload("./binder/writer_pack/tree/base.gd")

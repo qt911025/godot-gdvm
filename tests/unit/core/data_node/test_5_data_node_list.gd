@@ -49,8 +49,10 @@ func test_insert():
 func test_order_changed_signal():
 	watch_signals(node_list)
 	node_list.push_back("Apple")
+	await wait_frames(1)
 	assert_signal_emitted(node_list, "order_changed")
 	node_list.reverse()
+	await wait_frames(1)
 	assert_signal_emit_count(node_list, "order_changed", 2)
 
 func test_element_modification_propagation():

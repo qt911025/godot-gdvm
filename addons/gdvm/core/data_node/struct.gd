@@ -14,8 +14,8 @@ var _computed_dependencies: Dictionary[StringName, Dictionary] # key: dependency
 var _child_changed_informed: bool
 
 class Computed:
-	var _dependency_keys: Dictionary[DataNode, StringName]
-	var _dependency_values: Dictionary[StringName, Variant]
+	var _dependency_keys: Dictionary[DataNode, StringName] # 根据data_node获得依赖的data键
+	var _dependency_values: Dictionary[StringName, Variant] # 缓存值
 	var _outputs: Dictionary[StringName, DataNode]
 	var _computer: Callable
 
@@ -115,6 +115,46 @@ func remove_property(key: StringName) -> void:
 			for dependency in erased_computed._dependency_keys.values():
 				_computed_dependencies[dependency].erase(computed_property)
 
+## 按索引获取某个属性的data node
+## 传入的索引不论什么分隔符都算，无视绝对路径
+func get_indexed_property(property_path: NodePath, include_computed: bool = false) -> DataNode:
+	assert(Utils.assert_node_path_has_no_redirections(property_path))
+	var key: StringName
+	if property_path.get_name_count() > 0:
+		key = property_path.get_name(0)
+	elif property_path.get_subname_count() > 0:
+		key = property_path.get_subname(0)
+	else:
+		return self
+	var result: DataNode
+	if _data.has(key):
+		result = _data[key]
+		if property_path.get_name_count() + property_path.get_subname_count() > 1:
+			if result is DataNodeStruct:
+				result = (result as DataNodeStruct).get_indexed_property(property_path.slice(1))
+			else:
+				result = null
+	elif include_computed and _computed.has(key):
+		result = _computed[key].get_output(key)
+		if property_path.get_name_count() + property_path.get_subname_count() > 1:
+			if result is DataNodeStruct:
+				result = (result as DataNodeStruct).get_indexed_property(property_path.slice(1))
+			else:
+				result = null
+	else:
+		result = null
+	return result
+
+## 获取某个属性的data node
+func get_data_property_data_node(key: StringName) -> DataNode:
+	return _data.get(key)
+
+## 获取某个计算属性的data node
+func get_computed_property_data_node(key: StringName) -> DataNode:
+	if _computed.has(key):
+		return _computed[key].get_output(key)
+	return null
+
 ## 获取某个属性或者计算属性的data node
 func get_property_data_node(key: StringName) -> DataNode:
 	if _data.has(key):
@@ -126,7 +166,7 @@ func get_property_data_node(key: StringName) -> DataNode:
 ## 添加一个计算属性
 ## 计算属性类似Vue的computed，会同步更新值
 ## 依赖和输出都可以是多个，它们可以共用一个计算函数，只要有一个依赖改动都会触发计算函数
-## dependencies: Array 依赖列表，里面所有元素都应该是StringName，且必须已经是本DataNode的属性或计算属性
+## dependencies: Array 依赖列表，里面所有元素都应该是StringName（String会自动转换），且必须已经是本DataNode的属性或计算属性
 ## outputs: Dictionary 计算属性列表，键为计算属性，值为一个已经准备好的DataNode，和add_property一样
 ## computer: Callable 计算函数，第一个参数是一个字典，键为依赖项（依赖项既可以是属性也可以是计算属性），值为这个依赖项的值；
 ##   第二个参数也是一个字典，键为所添加的计算属性，值为这个计算属性的DataNode
@@ -134,7 +174,7 @@ func get_property_data_node(key: StringName) -> DataNode:
 func add_computed_properties(dependencies: Array, outputs: Dictionary, computer: Callable) -> void:
 	assert(__assert_validate_add_computed(dependencies, outputs))
 	var dependencies_dict := {}
-	for dependency in dependencies:
+	for dependency: StringName in dependencies:
 		var computed_dependency := _computed_dependencies.get_or_add(dependency, {}) as Dictionary
 		for output_key in outputs:
 			computed_dependency[output_key] = null
@@ -160,6 +200,15 @@ func __assert_validate_add_computed(dependencies: Array, outputs: Dictionary) ->
 		"DataNodeStruct: Add computed property failed, output (%s) already exists." % key)
 		assert(outputs[key] is DataNode, "DataNodeStruct: Computed output must be DataNode")
 	return true
+
+func has_property(key: StringName) -> bool:
+	return _data.has(key) or _computed.has(key)
+
+func has_data_property(key: StringName) -> bool:
+	return _data.has(key)
+
+func has_computed_property(key: StringName) -> bool:
+	return _computed.has(key)
 
 ## 行为 ======================================================================
 func _set_value(value: Variant) -> bool:

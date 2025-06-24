@@ -1,0 +1,114 @@
+[gd_scene load_steps=5 format=3 uid="uid://dn6u05ccklfqu"]
+
+[ext_resource type="Script" uid="uid://cwtiu7txd6lwt" path="res://examples/_6_todo_mvc/main.gd" id="1_d1apd"]
+[ext_resource type="Script" uid="uid://cgxystixyui7r" path="res://examples/_6_todo_mvc/line_edit.gd" id="2_n25cg"]
+[ext_resource type="PackedScene" uid="uid://ekwohf13xiwb" path="res://examples/_6_todo_mvc/item.tscn" id="3_ksrh2"]
+[ext_resource type="ButtonGroup" uid="uid://cvn2lx07nj0a5" path="res://examples/_6_todo_mvc/filter_button_group.tres" id="4_uf3xn"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_d1apd")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Container" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 50.0
+offset_right = 200.0
+offset_bottom = 500.0
+grow_horizontal = 2
+
+[node name="Header" type="PanelContainer" parent="Panel/Container"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/Container/Header"]
+layout_mode = 2
+
+[node name="SelectAll" type="CheckBox" parent="Panel/Container/Header/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="NewItem" type="LineEdit" parent="Panel/Container/Header/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "What needs to be done ?"
+clear_button_enabled = true
+select_all_on_focus = true
+script = ExtResource("2_n25cg")
+
+[node name="Todos" type="VBoxContainer" parent="Panel/Container"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Item" parent="Panel/Container/Todos" instance=ExtResource("3_ksrh2")]
+layout_mode = 2
+
+[node name="Footer" type="PanelContainer" parent="Panel/Container"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel/Container/Footer"]
+layout_mode = 2
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 5
+
+[node name="ItemsLeft" type="Label" parent="Panel/Container/Footer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 12
+text = "0 items left"
+
+[node name="Filter" type="HBoxContainer" parent="Panel/Container/Footer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="All" type="Button" parent="Panel/Container/Footer/MarginContainer/Filter"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+button_pressed = true
+button_group = ExtResource("4_uf3xn")
+text = "All"
+
+[node name="Active" type="Button" parent="Panel/Container/Footer/MarginContainer/Filter"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+button_group = ExtResource("4_uf3xn")
+text = "Active"
+
+[node name="Completed" type="Button" parent="Panel/Container/Footer/MarginContainer/Filter"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+button_group = ExtResource("4_uf3xn")
+text = "Completed"
+
+[node name="ClearCompleted" type="Button" parent="Panel/Container/Footer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 10
+text = "Clear Completed"

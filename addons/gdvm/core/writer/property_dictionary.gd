@@ -9,25 +9,30 @@ var _dictionary_property: NodePath
 var _sub_writer: ElementSubWriter
 
 class ElementInfo:
-	var target_element: Object
+	var source_element_id: int
+	var target_element_id: int
 	var binded_writers: Array[Writer]
 
-	func _init(target_element: Object, binded_writers: Array) -> void:
-		self.target_element = target_element
+	func _init(source_element_id: int, target_element_id: int, binded_writers: Array) -> void:
+		self.source_element_id = source_element_id
+		self.target_element_id = target_element_id
 		self.binded_writers = Array(binded_writers, TYPE_OBJECT, "RefCounted", Writer)
 
 class ElementSubWriter:
 	## 申请元素回调，里面一般包括目标元素的构建，以及传入的DataNode的绑定
 	var alloc_element: Callable
-	var drop_element: Callable # must include unbind, if your writers has strong references
+	var bind_writers: Callable
+	var drop_element: Callable
 
-	var element_map: Dictionary[int, ElementInfo] # 键是DataNode的object id，作为弱引用，值是ElementInfo，是对target_element的强引用
+	var element_map: Dictionary[Variant, ElementInfo] # 键是data_node以及目标共有的key
 
 	func _init(
-		alloc_element_cb: Callable = func(element_data_node: DataNode) -> ElementInfo: return null,
-		drop_element_cb: Callable = func(target_element_info: ElementInfo) -> void: return ,
+		alloc_element_cb: Callable = func(source_data_node: DataNode) -> Object: return null,
+		bind_writers_cb: Callable = func(source_data_node: DataNode, target_element: Object) -> Array: return [],
+		drop_element_cb: Callable = func(target_element: Object) -> void: return ,
 	) -> void:
 		alloc_element = alloc_element_cb
+		bind_writers = bind_writers_cb
 		drop_element = drop_element_cb
 
 ## 字典写者
@@ -41,15 +46,14 @@ func _init(target: Object, dictionary_property: NodePath, data_node: DataNodeDic
 	var target_dictionary: Dictionary = target.get_indexed(dictionary_property)
 	assert(is_instance_valid(data_node))
 	assert(not target_dictionary.is_typed_key() or data_node.is_same_typed_key_with_dictionary(target_dictionary))
-	assert(not target_dictionary.is_typed_value() or data_node.is_same_typed_value_with_dictionary(target_dictionary))
 
 	_target_ref = weakref(target)
 	_dictionary_property = dictionary_property
-	# _data_node_ref = weakref(data_node)
 	_sub_writer = element_sub_writer
 
 	if _sub_writer == null:
 		# 没有sub writer，用于元素是基础数据类型，或者元素不绑定任何Writer的时候，改变元素总是创建新元素
+		assert(not target_dictionary.is_typed_value() or data_node.is_same_typed_value_with_dictionary(target_dictionary))
 		data_node.changed.connect(_on_changed)
 		_on_changed(data_node)
 	else:
@@ -77,27 +81,30 @@ func _on_changed_with_sub_writer(data_node: DataNode) -> void:
 		var element_node_dictionary := data_node_dict.get_element_nodes()
 		var target_dictionary: Dictionary = target.get_indexed(_dictionary_property)
 		
-		var old_element_map := _sub_writer.element_map
-		var new_element_map := {}
+		var element_map := _sub_writer.element_map
 
+		for key in element_map:
+			if not element_node_dictionary.has(key):
+				element_map.erase(key)
 		for key in target_dictionary:
 			if not element_node_dictionary.has(key):
+				_sub_writer.drop_element.call(target_dictionary[key])
 				target_dictionary.erase(key)
-		for key in element_node_dictionary:
-			var element_data_node := element_node_dictionary[key] as DataNode
-			var element_data_node_id: int = element_data_node.get_instance_id()
-			var target_element_info: ElementInfo
-			if old_element_map.has(element_data_node_id):
-				target_element_info = old_element_map.get(element_data_node_id)
-				old_element_map.erase(element_data_node_id)
-			else:
-				target_element_info = _sub_writer.alloc_element.call(element_data_node)
-			target_dictionary[key] = target_element_info.target_element
-			new_element_map[element_data_node_id] = target_element_info
 
-		for key_of_waste in old_element_map:
-			_sub_writer.drop_element.call(old_element_map[key_of_waste])
-		
-		_sub_writer.element_map = new_element_map
+		for key in element_node_dictionary:
+			var source_element := element_node_dictionary[key] as DataNode
+			var source_element_id: int = source_element.get_instance_id()
+			var target_element: Object = target_dictionary.get_or_add(key, _sub_writer.alloc_element.call(source_element))
+			var target_element_id: int = target_element.get_instance_id()
+
+			var element_info := element_map.get(key)
+			if element_info == null or \
+			element_info.source_element_id != source_element_id or \
+			element_info.target_element_id != target_element_id:
+				element_map[key] = ElementInfo.new(
+					source_element_id,
+					target_element_id,
+					_sub_writer.bind_writers.call(source_element, target_element)
+				)
 	else:
 		data_node.order_changed.disconnect(_on_changed_with_sub_writer)

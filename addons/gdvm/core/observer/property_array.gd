@@ -5,6 +5,8 @@ const Utils = preload("../../utils.gd")
 
 var _changed_signal: Signal
 
+var _changed_notified: bool
+
 var _array_property: NodePath
 var _alloc_element_observer: Callable
 var _element_map: Array[ElementInfo]
@@ -45,6 +47,11 @@ func _init(source: Object,
 	_on_changed_notified()
 
 func _on_changed_notified() -> void:
+	if not _changed_notified:
+		_changed_notified = true
+		_defer_update.call_deferred()
+
+func _defer_update() -> void:
 	var source: Object = _source_ref.get_ref()
 	var target_data_node_list: DataNodeList = _target_data_node_ref.get_ref()
 	if is_instance_valid(source) and is_instance_valid(target_data_node_list):
@@ -64,3 +71,4 @@ func _on_changed_notified() -> void:
 				_element_map[i] = ElementInfo.new(source_element_id, target_element_id, binded_observers)
 	else:
 		_changed_signal.disconnect(_on_changed_notified)
+	_changed_notified = false

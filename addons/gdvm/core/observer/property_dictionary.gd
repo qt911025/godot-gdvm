@@ -5,6 +5,8 @@ const Utils = preload("../../utils.gd")
 
 var _changed_signal: Signal
 
+var _changed_notified: bool
+
 var _dictionary_property: NodePath
 var _alloc_element_observer: Callable
 var _element_map: Dictionary[Variant, ElementInfo]
@@ -44,11 +46,16 @@ func _init(source: Object,
 	_on_changed_notified()
 
 func _on_changed_notified() -> void:
+	if not _changed_notified:
+		_changed_notified = true
+		_defer_update.call_deferred()
+
+func _defer_update() -> void:
 	var source: Object = _source_ref.get_ref()
 	var target_data_node_dict: DataNodeDict = _target_data_node_ref.get_ref()
 	if is_instance_valid(source) and is_instance_valid(target_data_node_dict):
 		var source_dictionary: Dictionary = source.get_indexed(_dictionary_property)
-		for key in target_data_node_dict:
+		for key in target_data_node_dict.keys():
 			if not source_dictionary.has(key):
 				target_data_node_dict.erase(key)
 		for key in _element_map:
@@ -65,3 +72,4 @@ func _on_changed_notified() -> void:
 				_element_map[key] = ElementInfo.new(source_element_id, target_element_id, binded_observers)
 	else:
 		_changed_signal.disconnect(_on_changed_notified)
+	_changed_notified = false

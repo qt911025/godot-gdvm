@@ -1,0 +1,54 @@
+[gd_scene load_steps=3 format=3 uid="uid://ekwohf13xiwb"]
+
+[ext_resource type="Script" uid="uid://ddi7w3wxtpkkd" path="res://examples/_6_todo_mvc/item.gd" id="1_1jiml"]
+[ext_resource type="Script" uid="uid://cgxystixyui7r" path="res://examples/_6_todo_mvc/line_edit.gd" id="2_v2pt6"]
+
+[node name="Item" type="VBoxContainer"]
+script = ExtResource("1_1jiml")
+
+[node name="PanelContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="NormalMode" type="PanelContainer" parent="PanelContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/NormalMode"]
+layout_mode = 2
+
+[node name="Completed" type="CheckBox" parent="PanelContainer/NormalMode/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Content" type="RichTextLabel" parent="PanelContainer/NormalMode/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+bbcode_enabled = true
+vertical_alignment = 1
+
+[node name="Remove" type="Button" parent="PanelContainer/NormalMode"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+mouse_filter = 1
+text = "Remove"
+
+[node name="EditMode" type="PanelContainer" parent="PanelContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Edit" type="LineEdit" parent="PanelContainer/EditMode"]
+unique_name_in_owner = true
+layout_mode = 2
+select_all_on_focus = true
+script = ExtResource("2_v2pt6")

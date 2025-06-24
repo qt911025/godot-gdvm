@@ -173,7 +173,7 @@ static func type_is_type(sub_type: Variant, super_type: Variant) -> bool:
 	var result := false
 	match typeof(super_type):
 		TYPE_INT: # primitive type
-			result = sub_type == super_type
+			result = (sub_type is int and sub_type == super_type)
 		TYPE_STRING, TYPE_STRING_NAME: # built-in class
 			if sub_type is String or sub_type is StringName:
 				result = ClassDB.is_parent_class(sub_type, super_type)
@@ -199,9 +199,19 @@ static func type_is_type(sub_type: Variant, super_type: Variant) -> bool:
 static func type_has_strict_data_node(type: Variant) -> bool:
 	return type is int and type > TYPE_NIL and type < TYPE_OBJECT
 
+## 判断实例的类型是否有严格类型的数据节点
+static func instance_has_strict_data_node(instance: Variant) -> bool:
+	var type := typeof(instance)
+	return type > TYPE_NIL and type < TYPE_OBJECT
+
 ## 判断是否为数组型数据
 static func type_is_array(type: Variant) -> bool:
 	return type is int and type >= TYPE_ARRAY and type < TYPE_MAX
+
+## 判断实例是否为数组型数据
+static func instance_is_array(instance: Variant) -> bool:
+	var type := typeof(instance)
+	return type >= TYPE_ARRAY and type < TYPE_MAX
 
 ## 判断能否转换为NodePath
 static func type_can_be_nodepath(type: Variant) -> bool:
@@ -311,17 +321,48 @@ static func type_to_script(type: Variant) -> Script:
 		return null
 
 ## 打包提取类型对应的三个值
-static func type_to_3(type: Variant) -> Dictionary:
-	return {
-		"builtin": type_to_builtin(type),
-		"class_name": type_to_class_name(type),
-		"script": type_to_script(type)
-	}
+static func type_from_gdvm_to_godot_style(type: Variant) -> Array:
+	return [
+		type_to_builtin(type),
+		type_to_class_name(type),
+		type_to_script(type)
+	]
+
+## 将godot三值转成gdvm格式的
+## 其中TYPE_NIL代表无类型（Variant）
+static func type_from_godot_to_gdvm_style(builtin: int, cls_name: StringName, script: Script) -> Variant:
+	# cls_name即class_name，因为是保留字所以简写
+	var result = null
+	if builtin == TYPE_NIL:
+		result = null
+	elif builtin == TYPE_OBJECT:
+		if script == null:
+			result = cls_name
+		else:
+			result = script
+	else:
+		result = builtin
+	return result
 
 ## 判断NodePath是否为空
 ## 这是特殊规则，会把"/"视为空
 static func node_path_is_empty(node_path: NodePath) -> bool:
 	return node_path.get_name_count() == 0 and node_path.get_subname_count() == 0
+
+## 判断一个字典的形式是否为结构体配置，否则只是一个字典
+static func dictionary_is_struct(dictionary: Dictionary) -> bool:
+	var result := false
+	var size := dictionary.size()
+	if size > 1:
+		result = true
+	elif size == 1:
+		var key_of_data = dictionary.keys()[0]
+		var type_of_key_of_data = instance_get_type(key_of_data)
+		if (type_of_key_of_data == TYPE_STRING or \
+		type_of_key_of_data == TYPE_STRING_NAME) and \
+		not (key_of_data as String).is_empty():
+			result = true
+	return result
 
 # tools ============================================================
 static func pack_scene(node: Node) -> PackedScene:
@@ -342,6 +383,54 @@ static func pack_scene(node: Node) -> PackedScene:
 	result.pack(node)
 	return result
 
+## 连接数据节点路径
+## 分隔符统一为“/”，强制转为相对路径
+static func connect_data_node_path(current: NodePath, extra: NodePath, spliter: StringName = &"/") -> NodePath:
+	var result_array := []
+	var current_name_lenth := current.get_name_count()
+	var current_subname_lenth := current.get_subname_count()
+	var extra_name_lenth := extra.get_name_count()
+	var extra_subname_lenth := extra.get_subname_count()
+	result_array.resize(current_name_lenth + current_subname_lenth + extra_name_lenth + extra_subname_lenth)
+	var offset := 0
+	for i in current_name_lenth:
+		result_array[i] = current.get_name(i)
+	offset += current_name_lenth
+	for i in current_subname_lenth:
+		result_array[offset + i] = current.get_subname(i)
+	offset += current_subname_lenth
+	for i in extra_name_lenth:
+		result_array[offset + i] = extra.get_name(i)
+	offset += extra_name_lenth
+	for i in extra_subname_lenth:
+		result_array[offset + i] = extra.get_subname(i)
+	return NodePath(spliter.join(result_array))
+
+## 连接关联路径（观察者路径或写者路径）
+static func connect_link_path(current: NodePath, extra: NodePath) -> NodePath:
+	if node_path_is_empty(current):
+		return extra
+	var path_str := [current]
+	var connect_char: String
+	if current.is_absolute(): # 开头为/的，确定第一个字段是节点
+		assert(extra.get_subname_count() == 0, "Pin: extra_path should be a node")
+		current = NodePath(String(current).substr(1))
+		connect_char = "/"
+	elif current.get_name_count() == 0: # 全属性或者空
+		connect_char = ""
+	elif extra.get_subname_count() == 0: # 前段全是节点，后段首个字段开头没有:视为一个节点
+		assert(current.get_concatenated_subnames().find("/") == -1, "Pin: the property part of current path (%s) should not contain \"/\" , got: %s" % [current, current.get_concatenated_subnames()])
+		connect_char = "/"
+	else:
+		assert(String(current).find("/") == -1, "Pin: current path (%s) should not contain \"/\"." % current)
+		connect_char = ":"
+	if extra.get_name_count() > 0 or extra.get_subname_count() > 0:
+		path_str.push_front(extra)
+	return NodePath(connect_char.join(path_str))
+
+## 将路径转为纯属性路径
+static func convert_node_path_into_full_property_path(node_path: NodePath) -> NodePath:
+	return connect_data_node_path(^"", node_path, &":").get_as_property_path()
 # Debug ============================================================
 # 打包断言，只能在assert里用
 

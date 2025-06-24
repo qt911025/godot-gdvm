@@ -25,14 +25,14 @@ func _ready() -> void:
 	vm = DataNodeList.new(TYPE_STRING, func() -> DataNodeVariant: return DataNodeVariant.new(""))
 	
 	writer = WriterNode.new(label_container, vm, WriterNode.ChildSubWriter.new(
-		func(child_data_node: DataNode) -> WriterNode.ChildInfo:
+		func(source_data_node: DataNode) -> Node:
 			var new_label := Label.new()
 			new_label.add_theme_font_size_override("font_size", 64)
-			var text_writer := WriterProperty.new(new_label, ^"text", child_data_node)
-			return WriterNode.ChildInfo.new(
-				new_label,
-				Array([text_writer], TYPE_OBJECT, "RefCounted", Writer)
-			)
+			new_label.text = source_data_node.value()
+			return new_label
+			,
+		func(source_data_node: DataNode, target_child: Node) -> Array:
+			return [WriterProperty.new(target_child, ^"text", source_data_node)]
 	))
 
 	timer.timeout.connect(_on_timer_timeout)
