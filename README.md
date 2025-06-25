@@ -89,15 +89,19 @@ DataNode通过结构化组织成树，并添加观察者（Observer）与写者�
 
 每个基本的DataNode、观察者与写者组织监听关系，规模扩大会让代码十分臃肿。
 
-Gdvm提供了更简洁的配置方式————Binder，通过将三类基础部件构建成三大集合，建立集合与集合之间的监听关系。
+Gdvm提供了更简洁的配置方式——Binder，通过将三类基础部件构建成三大集合，建立集合与集合之间的监听关系。
 
-|Core|DataNode|Observer|Writer|
-|Binder|DataTree|ObserverPack|WriterPack|
+|Core|Binder|
+|----|----|
+|DataNode|DataTree|
+|Observer|ObserverPack|
+|Writer|WriterPack|
+
 
 可以建立多重监听关系，让多个不同的DataTree观察同一个数据来源，同一个DataTree可以建立多个不同的写者，同步到多个不同的目标。
 
 ## Gdvm的适用场景
 
-Gdvm将数据武装到牙齿，为每一个基础数据类型包装了一层复杂的结构，会大大提高数据所占据的空间。
+Gdvm将数据武装到牙齿，为每一个基础数据类型包装了一层复杂的结构，包括信号、缓存值等，会大大提高数据所占据的空间。
 
 对数据量以及效率要求不大时，DataNode本身可以作为数据模型用。而数据量有一定规模后，应该自行定义数据结构与读写锁，只在表现层构建Gdvm来观察它。
