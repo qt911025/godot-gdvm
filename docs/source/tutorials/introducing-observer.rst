@@ -83,12 +83,124 @@
 
 ``ObserverPropertyArray``
 
+监听对象的数组属性，这会为数组的每一个元素创建对应的子观察者。
+
+.. code:: gd
+	
+	signal changed
+
+	class TestList:
+		var test_array: Array[TestObj]
+
+	class TestObj:
+		signal changed
+		var a: int:
+			set(value):
+				a = value
+				changed.emit()
+
+	func _ready():
+		var source_obj := TestList.new()
+		var target_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
+		var _observer := ObserverPropertyArray.new(
+			source_obj,
+			^":test_array",
+			target_data_node,
+			changed,
+			func(source_element: Object, target_element: DataNode) -> Array:
+				return [ObserverProperty.new(source_element, ^":a", target_element, source_element.changed)]
+		)
+		prints(target_data_node.size()) # 0
+		var foo_element := TestObj.new()
+		source_obj.test_array.append(foo_element)
+		changed.emit()
+		await get_tree().process_frame # 异步，等一帧
+		prints(target_data_node.value()) # [0]
+		prints(target_data_node.size()) # 1
+		foo_element.a = 1
+		await get_tree().process_frame # 异步，等一帧
+		prints(target_data_node.value()) # [1]
+
 属性字典型（PropertyDictionary）
 ----------------------------
 
 ``ObserverPropertyDictionary``
 
+监听对象的字典属性，这会为字典的每一个值创建对应的子观察者。
+
+.. code:: gd
+	
+	signal changed
+
+	class TestDict:
+		var test_dictionary: Dictionary[StringName, TestObj]
+
+	class TestObj:
+		signal changed
+		var a: int:
+			set(value):
+				a = value
+				changed.emit()
+
+	func _ready() -> void:
+		var source_obj := TestDict.new()
+		var target_data_node := DataNodeDict.new(TYPE_STRING_NAME, TYPE_INT, func(): return DataNodeInt.new(0))
+		var _observer := ObserverPropertyDictionary.new(
+			source_obj,
+			^":test_dictionary",
+			target_data_node,
+			changed,
+			func(source_element: Object, target_element: DataNode) -> Array:
+				return [ObserverProperty.new(source_element, ^":a", target_element, source_element.changed)]
+		)
+		prints(target_data_node.size()) # 0
+		var foo_element := TestObj.new()
+		source_obj.test_dictionary["new_element"] = foo_element
+		changed.emit()
+		await get_tree().process_frame # 异步，等一帧
+		prints(target_data_node.value()) # {&"new_element": 0}
+		prints(target_data_node.size()) # 1
+		foo_element.a = 1
+		await get_tree().process_frame # 异步，等一帧
+		prints(target_data_node.value()) # {&"new_element": 1}
+
 节点型（Node）
 ----------------------------
 
 ``ObserverNode``
+
+监听节点的子节点，会为每一个子节点创建观察者。
+
+因为节点自带子节点变化的信号，所以不需要手动指定变化信号。
+
+.. code:: gd
+
+	class TestSuperNode extends Node:
+		pass
+
+	class TestSubNode extends Node:
+		signal changed
+		var a: int:
+			set(value):
+				a = value
+				changed.emit()
+
+	func _ready() -> void:
+		var source_obj := TestSuperNode.new()
+		var target_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
+		var _observer := ObserverNode.new(
+			source_obj,
+			target_data_node,
+			func(source_child: Object, target_element: DataNode) -> Array:
+				return [ObserverProperty.new(source_child, ^":a", target_element, source_child.changed)]
+		)
+		prints(target_data_node.size()) # 0
+		var foo_child := TestSubNode.new()
+		source_obj.add_child(foo_child)
+		await get_tree().process_frame # 异步，等一帧
+		prints(target_data_node.value()) # [0]
+		prints(target_data_node.size()) # 1
+		foo_child.a = 1
+		await get_tree().process_frame # 异步，等一帧
+		prints(target_data_node.value()) # [1]
+		source_obj.queue_free()
