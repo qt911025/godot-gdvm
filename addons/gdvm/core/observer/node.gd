@@ -23,7 +23,8 @@ class ChildInfo:
 ## source: Node 源节点
 ## target_data_node_list: DataNodeList 绑定的目标DataNodeList
 ## alloc_element_observer_cb: Callable 生成子观察者的回调函数，格式为func(source_child: Node, target_element: DataNode) -> Array[Observer]
-func _init(source: Node,
+func _init(
+	source: Node,
 	target_data_node_list: DataNodeList,
 	alloc_child_observer_cb: Callable
 ) -> void:
