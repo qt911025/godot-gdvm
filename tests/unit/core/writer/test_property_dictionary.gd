@@ -5,10 +5,10 @@ const WriterProperty = Gdvm.WriterProperty
 const DataNodeDict = Gdvm.DataNodeDict
 const DataNodeInt = Gdvm.DataNodeInt
 
-class TestSimpleList:
+class TestSimpleDictionary:
 	var test_dictionary: Dictionary[StringName, int]
 
-class TestList:
+class TestDictionary:
 	var test_dictionary: Dictionary[StringName, TestObj]
 
 class TestObj:
@@ -16,7 +16,7 @@ class TestObj:
 
 # simple list
 func test_write_simple_dict() -> void:
-	var target_obj := TestSimpleList.new()
+	var target_obj := TestSimpleDictionary.new()
 	var source_data_node := DataNodeDict.new(TYPE_STRING_NAME, TYPE_INT, func(): return DataNodeInt.new(0))
 	var _writer := WriterPropertyDictionary.new(target_obj, ^":test_dictionary", source_data_node)
 	assert_eq_deep(target_obj.test_dictionary, {})
@@ -26,7 +26,7 @@ func test_write_simple_dict() -> void:
 
 # complex list
 func test_write_complex_dict() -> void:
-	var target_obj := TestList.new()
+	var target_obj := TestDictionary.new()
 	var source_data_node := DataNodeDict.new(TYPE_STRING_NAME, TYPE_INT, func(): return DataNodeInt.new(0))
 	var _writer := WriterPropertyDictionary.new(
 		target_obj,
