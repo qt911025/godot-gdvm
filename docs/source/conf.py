@@ -17,7 +17,7 @@ release = "0.2.0"
 extensions = [
     "sphinx_rtd_dark_mode",
     "sphinx_copybutton",
-    "sphinxcontrib-mermaid"
+    "sphinxcontrib.mermaid"
 ]
 
 master_doc = "index"

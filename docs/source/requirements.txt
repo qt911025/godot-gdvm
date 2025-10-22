@@ -4,3 +4,5 @@ sphinx-rtd-dark-mode
 
 # Adds a 'copy' button to the right of codeblocks.
 sphinx-copybutton
+
+sphinxcontrib-mermaid
