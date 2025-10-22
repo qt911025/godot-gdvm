@@ -13,6 +13,7 @@ Godot通过子节点与属性构建出树状的数据结构，GDVM也使用了�
 示例7（ ``examples/_7_pure_script`` ）提供了一个完整的例子，无需编辑场景，单Node场景就能运行如下代码。
 
 .. code:: gd
+	
 	extends Node
 
 	const Utils = Gdvm.Utils

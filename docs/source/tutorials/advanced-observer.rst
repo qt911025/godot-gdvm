@@ -14,6 +14,7 @@ Node型以外的观察者必须要有一个外源信号，否则无法得知源�
 所以需要回调函数定义如何构造子观察者。
 
 .. code:: gd
+
     var _observer := ObserverPropertyArray.new(
 		source_obj,
 		^":test_array",
@@ -42,6 +43,7 @@ Node型以外的观察者必须要有一个外源信号，否则无法得知源�
 节点型同上，只不过不需要指定绑定的属性和改变信号，因为节点就是绑定节点本身，且自带改变信号。
 
 .. code:: gd
+	
 	var _writer := WriterNode.new(
 		target_obj,
 		source_data_node,

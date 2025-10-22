@@ -24,12 +24,14 @@ Data Node 进阶
 结构型将数据整合成结构体的方式是添加属性，添加属性之后才能分配其值。
 
 .. code:: gd
+
 	var a := Gdvm.DataNodeStruct.new()
 	a.add_property("name", Gdvm.DataNodeString.new("hello"))
 
 添加的属性可以移除。
 
 .. code:: gd
+
 	a.remove_property("name")
 
 可以添加 **计算属性** 。
@@ -37,6 +39,7 @@ Data Node 进阶
 为了作区分，又称狭义的 **属性** 为 **数据属性** 。
 
 .. code:: gd
+	
 	struct.add_computed_properties(
 		["a", "b"],
 		{

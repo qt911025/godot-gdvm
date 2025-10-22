@@ -12,6 +12,7 @@ Writer 进阶
 所以需要回调函数定义如何构造子写者。
 
 .. code:: gd
+	
 	var _writer := WriterPropertyArray.new(
 		target_obj,
 		^":test_array",
@@ -44,6 +45,7 @@ Writer 进阶
 申请回调和释放回调也可以实现为池的形式。
 
 .. code:: gd
+
 	var _writer := WriterPropertyArray.new(
 		target_obj,
 		^":test_array",
@@ -68,6 +70,7 @@ Writer 进阶
 节点型同上，只不过不需要指定绑定的属性，因为节点就是绑定节点本身，且自带改变信号。
 
 .. code:: gd
+
 	var _writer := WriterNode.new(
 		target_obj,
 		source_data_node,
