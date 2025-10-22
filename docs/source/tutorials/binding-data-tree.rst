@@ -162,7 +162,7 @@ GDVM会自动排序，也会自动识别错误依赖。
 观察
 ################
 
-调用``observe()``方法建立观察关系，代入的参数是已创建的 :ref:`观察者包 <binding-observer-pack>` 。
+调用``observe()``方法建立观察关系，代入的参数是已创建的 :doc:`观察者包 </tutorials/binding-observer-pack>` 。
 
 .. code:: gd
 
