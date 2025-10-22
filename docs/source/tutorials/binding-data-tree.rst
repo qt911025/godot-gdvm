@@ -32,7 +32,7 @@ DataTree的构造函数接受三种参数：
 		"example_int": 1,
 	})
 
-这个例子会被解析为一个带有两个数据属性的``DataNodeStruct``,
+这个例子会被解析为一个带有两个数据属性的 ``DataNodeStruct``,
 其中 ``example_string`` 是 ``DataNodeString`` ， ``example_int`` 是 ``DataNodeInt`` 。
 
 一般带类型的基础数据类型都会被识别为严格型，如果想要 ``DataNodeVariant`` ，请用 ``null``或者对象。
