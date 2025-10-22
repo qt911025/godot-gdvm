@@ -53,7 +53,7 @@ Godot的Variant能保存什么，DataNodeVariant就能保存什么。
 
 ``DataNodeList``的元素也是DataNode，每个元素都跟踪其变化。
 
-创建DataNodeList需要显式指定元素的类型（ :ref:`GDVM风格的 <gdvm_style_data_type>` ），以及一个元素DataNode的工厂函数。
+创建DataNodeList需要显式指定元素的类型（ :doc:`GDVM风格的 </theory/gdvm_style_data_type>` ），以及一个元素DataNode的工厂函数。
 
 .. code:: gd
 
