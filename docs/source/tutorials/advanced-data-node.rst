@@ -39,7 +39,7 @@ Data Node 进阶
 为了作区分，又称狭义的 **属性** 为 **数据属性** 。
 
 .. code:: gd
-	
+
 	struct.add_computed_properties(
 		["a", "b"],
 		{
@@ -54,6 +54,7 @@ Data Node 进阶
 计算属性实现了类似Vue的computed功能，会随着所依赖属性的变化重新计算。
 
 add_computed_properties 方法接受三个参数：
+
 1. 依赖属性列表
 2. 计算属性列表
 3. 计算属性的计算函数
