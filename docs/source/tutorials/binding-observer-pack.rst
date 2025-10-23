@@ -5,6 +5,8 @@
 
 观察者包的存在仅依赖于其观察的数据，与关联的数据树相互独立。
 
+观察者包创建后无法改变，要修改必须重新创建。
+
 GDVM默认实现了树型的观察者包，即 ``ObserverPackTree`` ，以下是 ``ObserverPackTree`` 的文档。
 
 构造函数
@@ -119,19 +121,13 @@ GDVM默认实现了树型的观察者包，即 ``ObserverPackTree`` ，以下是
 
 .. code:: gd
 
-	var _writers := WriterPackTree.new(root, {
-		base = get_tree().current_scene,
-		options = {
-			"left": WriterPackTree.opts({
-				"path": "Panel/Label:text"
-			}),
-			"top_right": WriterPackTree.opts({
-				"path": "Panel/Panel/LabelUpper:text"
-			}),
-			"bottom_right": WriterPackTree.opts({
-				"path": "Panel/Panel/LabelLower:text"
-			}),
-		}
+	var observer := ObserverPackTree.new({
+		"base": source_obj,
+		"options": ObserverPackTree.opts({
+			"path": ":data",
+			"changed": func(source: Object, _property_path: NodePath) -> Signal:
+				return (source as ObjWithInt).changed
+				})
 	})
 
 这个相对路径是相对于最近显式定义的同一个 **小树** 内的路径。

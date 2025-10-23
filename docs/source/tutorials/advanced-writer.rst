@@ -40,7 +40,7 @@ Writer 进阶
 
 **注意：目标元素对象的申请和释放的过程完全由回调函数定义，回调函数外不会有任何额外的操作。**
 
-如果目标元素对象不是 ``RefCounted`` ，则必须实现释放回调。
+如果目标元素对象既不是 ``RefCounted`` 也不是 ``Node`` ，则必须实现释放回调。
 
 申请回调和释放回调也可以实现为池的形式。
 
@@ -84,3 +84,5 @@ Writer 进阶
 				return [WriterProperty.new(target_node, ^":a", chlid_data_node)]
 				)
 	)
+
+此外，释放回调函数应该有一个bool返回值，提示GDVM是否已经释放了这个子节点。
