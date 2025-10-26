@@ -27,13 +27,13 @@
 	# ...
 
 	func _ready():
-    	var target_obj := TestObj.new()
-        var source_data_node := DataNodeInt.new(0)
-        prints(target_obj.a) # 0
+		var target_obj := TestObj.new()
+		var source_data_node := DataNodeInt.new(0)
+		prints(target_obj.a) # 0
 
-        var _writer := WriterProperty.new(target_obj, ^"a", source_data_node)
-        source_data_node.render(1)
-        prints(target_obj.a) # 1
+		var _writer := WriterProperty.new(target_obj, ^"a", source_data_node)
+		source_data_node.render(1)
+		prints(target_obj.a) # 1
 
 属性数组型（PropertyArray）
 ----------------------------
@@ -46,57 +46,57 @@
 
 .. code:: gd
 
-    class TestSimpleList:
-        var test_array: Array[int]
+	class TestSimpleList:
+		var test_array: Array[int]
 
 	# ...
 
-    func _ready() -> void:
-        var target_obj := TestSimpleList.new()
-        var source_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
+	func _ready() -> void:
+		var target_obj := TestSimpleList.new()
+		var source_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
 
-        var _writer := WriterPropertyArray.new(target_obj, ^":test_array", source_data_node)
-        prints(target_obj.test_array) # []
-        source_data_node.append(1)
+		var _writer := WriterPropertyArray.new(target_obj, ^":test_array", source_data_node)
+		prints(target_obj.test_array) # []
+		source_data_node.append(1)
 		await get_tree().process_frame # Struct updates asynchronously
-        prints(target_obj.test_array) # [1]
+		prints(target_obj.test_array) # [1]
 
 元素是对象的数组，需要指定子写者。
 
 .. code:: gd
 
-    class TestList:
-        var test_array: Array[TestObj]
+	class TestList:
+		var test_array: Array[TestObj]
 
-    class TestObj:
-        var a: int
+	class TestObj:
+		var a: int
 
-    # ...
+	# ...
 
-    func _ready() -> void:
-        var target_obj := TestList.new()
-        var source_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
-        var _writer := WriterPropertyArray.new(
-            target_obj,
-            ^":test_array",
-            source_data_node,
-            WriterPropertyArray.ElementSubWriter.new(
-                func(element_data_node: DataNodeInt):
-                    var result := TestObj.new()
-                    result.a = element_data_node.value()
-                    return result
-                    ,
-                func(element_data_node: DataNodeInt, target_object: TestObj) -> Array:
-                    return [WriterProperty.new(target_object, ^":a", element_data_node)]
-                    )
-        )
+	func _ready() -> void:
+		var target_obj := TestList.new()
+		var source_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
+		var _writer := WriterPropertyArray.new(
+			target_obj,
+			^":test_array",
+			source_data_node,
+			WriterPropertyArray.ElementSubWriter.new(
+				func(element_data_node: DataNodeInt):
+					var result := TestObj.new()
+					result.a = element_data_node.value()
+					return result
+					,
+				func(element_data_node: DataNodeInt, target_object: TestObj) -> Array:
+					return [WriterProperty.new(target_object, ^":a", element_data_node)]
+					)
+		)
 
-        prints(target_obj.test_array) # []
-        source_data_node.append(1)
+		prints(target_obj.test_array) # []
+		source_data_node.append(1)
 
-        await get_tree().process_frame # Struct updates asynchronously
-        prints(target_obj.test_array.size()) # 1
-        prints(target_obj.test_array[0].a) # 1
+		await get_tree().process_frame # Struct updates asynchronously
+		prints(target_obj.test_array.size()) # 1
+		prints(target_obj.test_array[0].a) # 1
 
 
 属性字典型（PropertyDictionary）
@@ -110,56 +110,56 @@
 
  .. code:: gd
 
-    class TestSimpleDictionary:
-        var test_dictionary: Dictionary[StringName, int]
+	class TestSimpleDictionary:
+		var test_dictionary: Dictionary[StringName, int]
 
-    # ...
+	# ...
 
-    func _ready() -> void:
-        var target_obj := TestSimpleDictionary.new()
-        var source_data_node := DataNodeDict.new(TYPE_STRING_NAME, TYPE_INT, func(): return DataNodeInt.new(0))
+	func _ready() -> void:
+		var target_obj := TestSimpleDictionary.new()
+		var source_data_node := DataNodeDict.new(TYPE_STRING_NAME, TYPE_INT, func(): return DataNodeInt.new(0))
 
-        var _writer := WriterPropertyDictionary.new(target_obj, ^":test_dictionary", source_data_node)
-        prints(target_obj.test_dictionary) # {}
-        source_data_node.set_element(&"new_element", 1)
+		var _writer := WriterPropertyDictionary.new(target_obj, ^":test_dictionary", source_data_node)
+		prints(target_obj.test_dictionary) # {}
+		source_data_node.set_element(&"new_element", 1)
 
-        await get_tree().process_frame # Struct updates asynchronously
-        prints(target_obj.test_dictionary) # {&"new_element": 1}
+		await get_tree().process_frame # Struct updates asynchronously
+		prints(target_obj.test_dictionary) # {&"new_element": 1}
 
 值是对象的字典，需要指定子写者。键没有子写者。
 
 .. code:: gd
-    
-    class TestDictionary:
-        var test_dictionary: Dictionary[StringName, TestObj]
+	
+	class TestDictionary:
+		var test_dictionary: Dictionary[StringName, TestObj]
 
-    class TestObj:
-        var a: int
+	class TestObj:
+		var a: int
 
-    # ...
+	# ...
 
-    func _ready() -> void:
-        var target_obj := TestDictionary.new()
-        var source_data_node := DataNodeDict.new(TYPE_STRING_NAME, TYPE_INT, func(): return DataNodeInt.new(0))
-        var _writer := WriterPropertyDictionary.new(
-            target_obj,
-            ^":test_dictionary",
-            source_data_node,
-            WriterPropertyDictionary.ElementSubWriter.new(
-                func(element_data_node: DataNodeInt):
-                    var result := TestObj.new()
-                    result.a = element_data_node.value()
-                    return result
-                    ,
-                func(element_data_node: DataNodeInt, target_object: TestObj) -> Array:
-                    return [WriterProperty.new(target_object, ^":a", element_data_node)]
-                    )
-        )
-        prints(target_obj.test_dictionary) # {}
-        source_data_node.set_element(&"new_element", 1)
-        await get_tree().process_frame # Struct updates asynchronously
-        prints(target_obj.test_dictionary.size()) # 1
-        prints(target_obj.test_dictionary[&"new_element"].a) # 1
+	func _ready() -> void:
+		var target_obj := TestDictionary.new()
+		var source_data_node := DataNodeDict.new(TYPE_STRING_NAME, TYPE_INT, func(): return DataNodeInt.new(0))
+		var _writer := WriterPropertyDictionary.new(
+			target_obj,
+			^":test_dictionary",
+			source_data_node,
+			WriterPropertyDictionary.ElementSubWriter.new(
+				func(element_data_node: DataNodeInt):
+					var result := TestObj.new()
+					result.a = element_data_node.value()
+					return result
+					,
+				func(element_data_node: DataNodeInt, target_object: TestObj) -> Array:
+					return [WriterProperty.new(target_object, ^":a", element_data_node)]
+					)
+		)
+		prints(target_obj.test_dictionary) # {}
+		source_data_node.set_element(&"new_element", 1)
+		await get_tree().process_frame # Struct updates asynchronously
+		prints(target_obj.test_dictionary.size()) # 1
+		prints(target_obj.test_dictionary[&"new_element"].a) # 1
 
 节点型（Node）
 ----------------------------
@@ -172,33 +172,33 @@
 
 .. code:: gd
 
-    class TestSuperNode extends Node:
-        pass
+	class TestSuperNode extends Node:
+		pass
 
-    class TestSubNode extends Node:
-        var a: int
+	class TestSubNode extends Node:
+		var a: int
 
-    # ...
+	# ...
 
-    func _ready() -> void:
-        var target_obj := TestSuperNode.new()
-        var source_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
-        var _writer := WriterNode.new(
-            target_obj,
-            source_data_node,
-            WriterNode.ChildSubWriter.new(
-                func(chlid_data_node: DataNodeInt) -> Node:
-                    var result := TestSubNode.new()
-                    result.a = chlid_data_node.value()
-                    return result
-                    ,
-                func(chlid_data_node: DataNodeInt, target_node: Node) -> Array:
-                    return [WriterProperty.new(target_node, ^":a", chlid_data_node)]
-                    )
-        )
-        prints(target_obj.get_child_count()) # 0
-        source_data_node.append(1)
-        await get_tree().process_frame # Struct updates asynchronously
-        prints(target_obj.get_child_count()) # 1
-        prints(target_obj.get_child(0).a) # 1
-        target_obj.queue_free()
+	func _ready() -> void:
+		var target_obj := TestSuperNode.new()
+		var source_data_node := DataNodeList.new(TYPE_INT, func(): return DataNodeInt.new(0))
+		var _writer := WriterNode.new(
+			target_obj,
+			source_data_node,
+			WriterNode.ChildSubWriter.new(
+				func(chlid_data_node: DataNodeInt) -> Node:
+					var result := TestSubNode.new()
+					result.a = chlid_data_node.value()
+					return result
+					,
+				func(chlid_data_node: DataNodeInt, target_node: Node) -> Array:
+					return [WriterProperty.new(target_node, ^":a", chlid_data_node)]
+					)
+		)
+		prints(target_obj.get_child_count()) # 0
+		source_data_node.append(1)
+		await get_tree().process_frame # Struct updates asynchronously
+		prints(target_obj.get_child_count()) # 1
+		prints(target_obj.get_child(0).a) # 1
+		target_obj.queue_free()

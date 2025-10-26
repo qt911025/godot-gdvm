@@ -9,12 +9,12 @@ GDVM风格的数据类型定义
 原生的API数据只能这么流转：
 
 .. mermaid::
-    graph LR
-        get_script-->is_instance_of
-        type_of-->is_instance_of
-        type_of-->type_string
-        type_string-->prints
-        get_class-->is_class
+	flowchart LR
+		get_script-->is_instance_of
+		type_of-->is_instance_of
+		type_of-->type_string
+		type_string-->prints
+		get_class-->is_class
 
 GDVM用了另一套数据类型定义规则，涵盖了所有的 ``get`` 和 ``is`` 实现。
 

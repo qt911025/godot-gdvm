@@ -12,18 +12,18 @@ GDVM以树的形式组织数据，与Godot的节点树相匹配。
 
 .. mermaid::
 
-    graph TD
-        subgraph 基小树
-            基-->a（Variant）
-            基-->b（Float）
-            基-->c（Node）
-        end
-        c（Node）-->d（Struct）
-        subgraph 子节点小树
-            d（Struct）-->e
-            d（Struct）-->f
-            d（Struct）-->g
-        end
+	flowchart TD
+		subgraph SA[基小树]
+			A(基)-->B(a（Variant）)
+			A-->C(b（Float）)
+			A-->D(c（Node）)
+		end
+		D-->E
+		subgraph SB[子节点小树]
+			E(d（Struct）)-->F(e)
+			E-->G(f)
+			E-->H(g)
+		end
 
 大小树结构有如下特点：
 
