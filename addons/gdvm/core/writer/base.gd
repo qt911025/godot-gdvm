@@ -1,3 +1,6 @@
+@abstract
+extends RefCounted
+
 ## 写者
 const DataNode = preload("../data_node/base.gd")
 
@@ -7,5 +10,5 @@ const DataNode = preload("../data_node/base.gd")
 var _target_ref: WeakRef
 # var _data_node_ref: WeakRef
 
-func _init():
-	assert(false, "Writer is an abstract class, please implement it.")
+@abstract
+func _init()

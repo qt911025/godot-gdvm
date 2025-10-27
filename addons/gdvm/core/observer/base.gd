@@ -1,3 +1,6 @@
+@abstract
+extends RefCounted
+
 ## 监测者
 const DataNode = preload("../data_node/base.gd")
 

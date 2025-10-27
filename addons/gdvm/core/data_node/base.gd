@@ -1,3 +1,6 @@
+@abstract
+extends RefCounted
+
 const DataNode = preload("./base.gd")
 ## 数据节点
 
@@ -12,8 +15,8 @@ var _outdated: bool = true
 ## 缓存数据
 var _cached_data: Variant = null
 
-func _init() -> void:
-	assert(false, "DataNode is abstract class, please use its subclass")
+@abstract
+func _init() -> void
 
 ## 渲染
 ## 设置本节点的数据
@@ -26,9 +29,8 @@ func render(value: Variant) -> void:
 ## 设置值（渲染钩子）
 ## 返回值代表成功与否（失败但不算错误）
 ## 覆盖实现它
-func _set_value(value: Variant) -> bool:
-	assert(false, "DataNode._set_value is abstract method, please override it")
-	return true
+@abstract
+func _set_value(value: Variant) -> bool
 
 ## 取值
 ## 获取本节点的数据
@@ -40,9 +42,8 @@ func value() -> Variant:
 
 ## 取值钩子
 ## 覆盖实现它
-func _get_value() -> Variant:
-	assert(false, "DataNode._get_value is abstract method, please override it")
-	return null
+@abstract
+func _get_value() -> Variant
 
 ## 数据是否已过期
 func is_outdated() -> bool:

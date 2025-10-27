@@ -1,3 +1,6 @@
+@abstract
+extends RefCounted
+
 const WriterPack = preload("./base.gd")
 const DataNode = preload("../../core/data_node/base.gd")
 

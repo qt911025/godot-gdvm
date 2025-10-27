@@ -1,3 +1,6 @@
+@abstract
+extends RefCounted
+
 const DataTreeTemplate = preload("./template.gd")
 const DataTreeOptions = preload("./options.gd")
 const Utils = preload("../../utils.gd")
@@ -15,13 +18,12 @@ const FactoryOfDataNode = preload("../../core/data_node/factory.gd")
 ## 只包含数据，不包含绑定
 
 ## 从DataTreeOptions配置构建DataTreeTemplate
-func from_tree_options(tree_opts: DataTreeOptions) -> void:
-	push_error("abstract method")
+@abstract
+func from_tree_options(tree_opts: DataTreeOptions) -> void
 
 ## 递归地创建对应的DataNode实例
-func to_data_node() -> DataNode:
-	push_error("abstract method")
-	return DataNode.new()
+@abstract
+func to_data_node() -> DataNode
 
 ## 由绑定的根目标和DataTreeOptions构建DataTreeTemplate
 static func build(tree_opts: DataTreeOptions) -> DataTreeTemplate:
