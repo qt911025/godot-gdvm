@@ -29,10 +29,10 @@ func test_observe_node() -> void:
 	assert_eq(target_data_node.size(), 0)
 	var foo_child := TestSubNode.new()
 	source_obj.add_child(foo_child)
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_data_node.value(), [0])
 	assert_eq(target_data_node.size(), 1)
 	foo_child.a = 1
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_data_node.value(), [1])
 	autoqfree(source_obj)

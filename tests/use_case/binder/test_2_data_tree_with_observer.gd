@@ -103,7 +103,7 @@ func test_observe_struct() -> void:
 	})
 	source_obj.a.data = 42
 	source_obj.b.data = 84
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(root.value(), {
 		"foo": 42,
 		"bar": 84,
@@ -137,10 +137,10 @@ func test_observe_array() -> void:
 	source_obj.array.append(elm_1)
 	source_obj.array.append(elm_2)
 	source_obj.changed.emit()
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(root.value(), [0, 0])
 	elm_1.data = 42
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(root.value(), [42, 0])
 
 func test_observe_dictionary() -> void:
@@ -170,10 +170,10 @@ func test_observe_dictionary() -> void:
 	source_obj.dictionary["foo"] = elm_1
 	source_obj.dictionary["bar"] = elm_2
 	source_obj.changed.emit()
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(root.value(), {"foo": 0, "bar": 0})
 	elm_1.data = 42
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(root.value(), {"foo": 42, "bar": 0})
 
 func test_observe_node() -> void:
@@ -197,11 +197,11 @@ func test_observe_node() -> void:
 	assert_eq(root.size(), 0)
 	var foo_child := SubNode.new()
 	source_obj.add_child(foo_child)
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(root.value(), [0])
 	assert_eq(root.size(), 1)
 	foo_child.a = 1
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(root.value(), [1])
 	autoqfree(source_obj)
 
@@ -238,11 +238,11 @@ func test_node_compound() -> void:
 	var foo_child := SubNode.new()
 	source_obj.add_child(foo_child)
 	source_obj.data = "foo"
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq(source_obj.data, "foo")
 	assert_eq_deep(children.value(), [0])
 	assert_eq(children.size(), 1)
 	foo_child.a = 1
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(children.value(), [1])
 	autoqfree(source_obj)

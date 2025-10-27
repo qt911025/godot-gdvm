@@ -23,7 +23,7 @@ func test_set_get_element():
 	node_dict.set_element("test", 42)
 	assert_eq(node_dict.get_element("test"), 42, "Should get correct value")
 	assert_eq(node_dict.size(), 1, "Size should update")
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_signal_emitted(node_dict, "order_changed")
 	assert_signal_emitted(node_dict, "changed")
 
@@ -53,7 +53,7 @@ func test_erase_and_clear():
 	
 	node_dict.erase("to_delete")
 	assert_false(node_dict.has("to_delete"), "Element should be deleted")
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_signal_emitted(node_dict, "changed")
 
 # Test dictionary operations

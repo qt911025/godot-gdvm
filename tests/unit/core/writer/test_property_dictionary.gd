@@ -21,7 +21,7 @@ func test_write_simple_dict() -> void:
 	var _writer := WriterPropertyDictionary.new(target_obj, ^":test_dictionary", source_data_node)
 	assert_eq_deep(target_obj.test_dictionary, {})
 	source_data_node.set_element(&"new_element", 1)
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_obj.test_dictionary, {&"new_element": 1})
 
 # complex list
@@ -44,6 +44,6 @@ func test_write_complex_dict() -> void:
 	)
 	assert_eq_deep(target_obj.test_dictionary, {})
 	source_data_node.set_element(&"new_element", 1)
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq(target_obj.test_dictionary.size(), 1)
 	assert_eq(target_obj.test_dictionary[&"new_element"].a, 1)

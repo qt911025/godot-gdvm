@@ -34,9 +34,9 @@ func test_observe_array() -> void:
 	var foo_element := TestObj.new()
 	source_obj.test_array.append(foo_element)
 	changed.emit()
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_data_node.value(), [0])
 	assert_eq(target_data_node.size(), 1)
 	foo_element.a = 1
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_data_node.value(), [1])

@@ -29,7 +29,7 @@ func test_observe_node() -> void:
 	)
 	assert_eq(target_obj.get_child_count(), 0)
 	source_data_node.append(1)
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq(target_obj.get_child_count(), 1)
 	assert_eq(target_obj.get_child(0).a, 1)
 	autoqfree(target_obj)

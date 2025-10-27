@@ -64,7 +64,7 @@ func test_computed() -> void:
 	var a_minus_b := (root as DataNodeStruct).get_computed_property_data_node("a_minus_b")
 	a.render("aaa")
 	b.render(1)
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq(a_plus_b.value(), 4)
 	assert_eq(a_minus_b.value(), 2)
 

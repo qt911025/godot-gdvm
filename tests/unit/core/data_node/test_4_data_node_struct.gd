@@ -59,7 +59,7 @@ func test_property_change_propagation():
 	watch_signals(struct)
 	
 	test_node.render("new_value")
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_signal_emitted(struct, "changed")
 
 

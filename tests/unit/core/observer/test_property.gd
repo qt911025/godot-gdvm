@@ -24,7 +24,7 @@ func test_observe_source_object_to_target_data_node() -> void:
 	
 	source_obj.a = 1
 	changed.emit()
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_data_node.value(), {"a": 1})
 
 # properties

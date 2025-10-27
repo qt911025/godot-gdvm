@@ -34,9 +34,9 @@ func test_observe_dictionary() -> void:
 	var foo_element := TestObj.new()
 	source_obj.test_dictionary["new_element"] = foo_element
 	changed.emit()
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_data_node.value(), {&"new_element": 0})
 	assert_eq(target_data_node.size(), 1)
 	foo_element.a = 1
-	await wait_frames(1)
+	await wait_physics_frames(1)
 	assert_eq_deep(target_data_node.value(), {&"new_element": 1})
