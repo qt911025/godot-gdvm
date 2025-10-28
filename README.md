@@ -1,5 +1,14 @@
 # Godot View Model by GDScript
 
+[![Documentation Status](https://readthedocs.org/projects/godot-gdvm/badge/?version=latest)](https://godot-gdvm.readthedocs.io/zh-cn/latest/)
+[![GitHub License](https://img.shields.io/github/license/qt911025/godot-gdvm)](https://github.com/qt911025/godot-gdvm/blob/main/LICENSE)
+## 支持的版本
+
+|GDVM|Godot|
+|----|----|
+|~0.2|^4.4|
+|~0.3|^4.5|
+
 ## 这是啥
 
 一个 Godot 的插件
